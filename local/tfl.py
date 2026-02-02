@@ -8,14 +8,16 @@ from PIL import Image, ImageDraw, ImageFont
 class Station:
     station_id: str
     nickname: str
+    crs_code: str
 
 
 @dataclass(frozen=True)
 class Stations:
-    BATTERSEA_POWER_STATION: Station = Station("940GZZBPSUST", "battersea")
-    BELSIZE_PARK: Station = Station("940GZZLUBZP", "belsize")
-    KENNINGTON: Station = Station("940GZZLUKNG", "kennington")
-    MORDEN: Station = Station("940GZZLUMDN", "morden")
+    BATTERSEA_POWER_STATION: Station = Station("940GZZBPSUST", "battersea", "BPS")
+    BELSIZE_PARK: Station = Station("940GZZLUBZP", "belsize", "ZBP")
+    KENNINGTON: Station = Station("940GZZLUKNG", "kennington", "ZKE")
+    MORDEN: Station = Station("940GZZLUMDN", "morden", "MDN")
+    EUSTON: Station = Station("940GZZLUEUS", "euston", "EUS")
 
 
 ID_TO_STATION = {
@@ -27,7 +29,7 @@ class TFL:
     def __init__(
         self,
         font_path: str = "assets/johnston.ttf",
-        font_size: int = 8,
+        font_size: int = 10,
         text_color: tuple[int, int, int] = (255, 211, 0),
         background_color: tuple[int, int, int] = (20, 20, 20),
     ):
@@ -37,6 +39,7 @@ class TFL:
         self.background_color = background_color
 
         self.font = ImageFont.truetype(self.font_path, self.font_size)
+        self.no_arrivals_font = ImageFont.truetype(self.font_path, 9)
 
         self.roundel = Image.open("assets/roundel.png")
         self.coin = Image.open("assets/coin.png")
@@ -61,7 +64,7 @@ class TFL:
         text_width = draw.textlength(text, font=self.font)
 
         x = int(32 - (text_width + self.roundel.width + 2) // 2)
-        image.paste(self.roundel, (x, 3))
+        image.paste(self.roundel, (x, 3), self.roundel)
         draw.text(
             xy=(x + self.roundel.width + 2, 0),
             text=text,
@@ -73,12 +76,12 @@ class TFL:
     def _draw_no_arrivals(self, image, draw, y):
         image.paste(self.tube, (32 - self.tube.width // 2, y + 10), self.tube)
         text = "Service closed"
-        text_width = int(draw.textlength(text, font=self.font))
+        text_width = int(draw.textlength(text, font=self.no_arrivals_font))
         draw.text(
             xy=(32 - text_width // 2, y + 10 + self.tube.height),
             text=text,
             fill=self.text_color,
-            font=self.font,
+            font=self.no_arrivals_font,
             anchor="la",
         )
 
@@ -97,7 +100,7 @@ class TFL:
                 continue
 
             try:
-                nickname = ID_TO_STATION[arrival["destinationNaptanId"]].nickname
+                nickname = ID_TO_STATION[arrival["destinationNaptanId"]].crs_code
             except KeyError:
                 print(f"Arrival is not a listed station: {arrival}")
                 nickname = arrival["destinationName"].split()[0]
@@ -113,9 +116,9 @@ class TFL:
             )
 
             if "via CX" in arrival["towards"]:
-                image.paste(self.cross, (2 + left_width, y + 2))
+                image.paste(self.cross, (3 + left_width, y + 3), self.cross)
             elif "via Bank" in arrival["towards"]:
-                image.paste(self.coin, (2 + left_width, y + 2))
+                image.paste(self.coin, (3 + left_width, y + 3), self.coin)
 
             mins_to_station = arrival["timeToStation"] // 60
             right_text = "Due" if mins_to_station == 0 else f"{mins_to_station}m"
