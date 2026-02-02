@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 import requests
-from PIL import ImageFont, ImageDraw, Image
+from PIL import Image, ImageDraw, ImageFont
 
 
 @dataclass(frozen=True)

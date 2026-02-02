@@ -1,14 +1,12 @@
-from aws_cdk import (
-    Stack,
-    Duration,
-    CfnOutput,
-    aws_lambda as _lambda,
-    aws_events as events,
-    aws_events_targets as targets
-)
+import os
+
+from aws_cdk import CfnOutput, Duration, Stack
+from aws_cdk import aws_events as events
+from aws_cdk import aws_events_targets as targets
+from aws_cdk import aws_lambda as _lambda
 from aws_cdk.aws_lambda_python_alpha import PythonFunction
 from constructs import Construct
-import os
+
 
 class PixooStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:

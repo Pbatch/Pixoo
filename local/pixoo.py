@@ -1,9 +1,9 @@
 import base64
 import json
+import os
 
 import requests
 from PIL import Image
-import os
 
 
 class Pixoo:
