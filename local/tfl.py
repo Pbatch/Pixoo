@@ -8,14 +8,14 @@ from PIL import Image, ImageDraw, ImageFont
 class Station:
     station_id: str
     nickname: str
-    crs_code: str
+    code: str
 
 
 @dataclass(frozen=True)
 class Stations:
     BATTERSEA_POWER_STATION: Station = Station("940GZZBPSUST", "battersea", "BPS")
-    BELSIZE_PARK: Station = Station("940GZZLUBZP", "belsize", "ZBP")
-    KENNINGTON: Station = Station("940GZZLUKNG", "kennington", "ZKE")
+    BELSIZE_PARK: Station = Station("940GZZLUBZP", "belsize", "BZP")
+    KENNINGTON: Station = Station("940GZZLUKNG", "kennington", "KEN")
     MORDEN: Station = Station("940GZZLUMDN", "morden", "MDN")
     EUSTON: Station = Station("940GZZLUEUS", "euston", "EUS")
 
@@ -42,7 +42,7 @@ class TFL:
         self.no_arrivals_font = ImageFont.truetype(self.font_path, 9)
 
         self.roundel = Image.open("assets/roundel.png")
-        self.coin = Image.open("assets/coin.png")
+        self.bank = Image.open("assets/bank.png")
         self.cross = Image.open("assets/cross.png")
         self.tube = Image.open("assets/tube.png")
 
@@ -100,12 +100,12 @@ class TFL:
                 continue
 
             try:
-                nickname = ID_TO_STATION[arrival["destinationNaptanId"]].crs_code
+                code = ID_TO_STATION[arrival["destinationNaptanId"]].code
             except KeyError:
                 print(f"Arrival is not a listed station: {arrival}")
-                nickname = arrival["destinationName"].split()[0]
+                code = arrival["destinationName"].split()[0][:3]
 
-            left_text = nickname.capitalize()
+            left_text = code.capitalize()
             left_width = int(draw.textlength(left_text, font=self.font))
             draw.text(
                 xy=(1, y),
@@ -118,7 +118,7 @@ class TFL:
             if "via CX" in arrival["towards"]:
                 image.paste(self.cross, (3 + left_width, y + 3), self.cross)
             elif "via Bank" in arrival["towards"]:
-                image.paste(self.coin, (3 + left_width, y + 3), self.coin)
+                image.paste(self.bank, (3 + left_width, y + 2), self.bank)
 
             mins_to_station = arrival["timeToStation"] // 60
             right_text = "Due" if mins_to_station == 0 else f"{mins_to_station}m"
