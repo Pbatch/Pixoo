@@ -1,7 +1,6 @@
 import json
 import os
 from dataclasses import dataclass
-from urllib.parse import urlencode
 
 import urllib3
 from PIL import Image, ImageDraw, ImageFont
@@ -26,11 +25,11 @@ class Stations:
     EUSTON: Station = Station("940GZZLUEUS", "euston", "EUS", True)
     HAMPSTEAD_HEATH: Station = Station("910GHMPSTDH", "heath", "HDH", False)
     STRATFORD: Station = Station("910GSTFD", "strtfrd", "SRA", False)
-    CLAPHAM_JUNCTION: Station = Station("910GCLPHMJ1", "clapham", "CLJ", False)
+    CLAPHAM_JUNCTION: Station = Station("910GCLPHMJ1", "claphm", "CLJ", False)
     RICHMOND: Station = Station("910GRICHMND", "rchmnd", "RMD", False)
     WILLESDEN_JUNCTION: Station = Station("910GWLSDJHL", "wllsdn", "WIJ", False)
 
-
+DUPLICATE_IDS = {"910GCLPHMJC": "910GCLPHMJ1"}
 ID_TO_STATION = {
     v.station_id: v for k, v in Stations.__dict__.items() if isinstance(v, Station)
 }
@@ -80,6 +79,8 @@ class TFL:
         direction = "inbound" if inbound else "outbound"
         exceptions = DIRECTION_EXCEPTIONS[direction].get(station_id, set())
         for a in arrivals:
+            a["naptanId"] = DUPLICATE_IDS.get(a["naptanId"], a["naptanId"])
+            a["destinationNaptanId"] = DUPLICATE_IDS.get(a["destinationNaptanId"], a["destinationNaptanId"])
             if a["direction"] == direction:
                 filtered_arrivals.append(a)
                 continue
@@ -189,7 +190,7 @@ class TFL:
 
 def main():
     tfl = TFL()
-    station = Stations.BELSIZE_PARK
+    station = Stations.HAMPSTEAD_HEATH
     arrivals = tfl.get_and_filter_arrivals(station.station_id, inbound=False)
     image = tfl.make_image(arrivals, station.nickname.capitalize(), underground=station.underground)
     image.save("debug.jpg")
