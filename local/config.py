@@ -37,6 +37,13 @@ class ParkrunMessage(Message):
     id_to_name: dict[str, str]
 
 
+@dataclass(frozen=True, kw_only=True)
+class MetOfficeMessage(Message):
+    mode: str = "met_office"
+    lat: str
+    lon: str
+
+
 @dataclass(frozen=True)
 class Config:
     messages: list[Message]

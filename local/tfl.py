@@ -1,8 +1,7 @@
-from datetime import datetime
 import json
 import os
 from dataclasses import dataclass
-from zoneinfo import ZoneInfo
+from datetime import datetime
 
 import urllib3
 from pen import Colours, Pen
@@ -58,7 +57,9 @@ class TFL:
         self.pool_manager = urllib3.PoolManager()
         self.app_key = os.environ.get("TFL_APP_KEY")
         if self.app_key is None:
-            raise ValueError("The TFL_APP_KEY environment variable must be set to use the TFL class")
+            raise ValueError(
+                "The TFL_APP_KEY environment variable must be set to use the TFL class"
+            )
         self.pen = Pen()
 
         self.underground = Image.open("assets/tfl/underground.png")
@@ -197,11 +198,16 @@ class TFL:
 
 
 def main():
+    from my_config import belsize_message
+
     tfl = TFL()
-    station = Stations.BELSIZE_PARK
-    arrivals = tfl.get_and_filter_arrivals(station.station_id, inbound=True)
+    station = ID_TO_STATION[belsize_message.station_id]
     image = tfl.make_image(
-        arrivals, station.nickname.capitalize(), underground=station.underground
+        arrivals=tfl.get_and_filter_arrivals(
+            station.station_id, belsize_message.inbound
+        ),
+        header_text=station.nickname.capitalize(),
+        underground=station.underground,
     )
     image.save("../tfl.png")
 

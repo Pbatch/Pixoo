@@ -1,40 +1,13 @@
-import json
 import os
 from dataclasses import dataclass
 from datetime import datetime
 
-import boto3
 import urllib3
+from pen import Colours, Pen
 from PIL import Image
+from s3_cache import S3Cache
 from urllib3 import make_headers
 
-from my_config import parkrun_message
-from pen import Colours, Pen
-
-
-class S3Cache:
-    def __init__(self):
-        self.s3 = boto3.client("s3")
-        self.bucket_name = os.environ["BUCKET_NAME"]
-        self.key = "results.json"
-
-    def get(self):
-        try:
-            response = self.s3.get_object(Bucket=self.bucket_name, Key=self.key)
-        except self.s3.exceptions.NoSuchKey:
-            return {}, None
-
-        last_updated = response['LastModified'].timestamp()
-        results = json.loads(response['Body'].read().decode('utf-8'))
-        return results, last_updated
-
-    def save(self, results):
-        self.s3.put_object(
-            Bucket=self.bucket_name,
-            Key=self.key,
-            Body=json.dumps(results),
-            ContentType="application/json",
-        )
 
 @dataclass
 class Runner:
@@ -47,14 +20,16 @@ class Runner:
     time: int | None = None
     age_grade: float | None = None
 
+
 class Parkrun:
-    def __init__(self):
+    def __init__(self, cache: S3Cache):
+        self.cache = cache
+
         self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
-            'Accept-Language': 'en-US,en;q=0.9',
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+            "Accept-Language": "en-US,en;q=0.9",
         }
         self.pool_manager = self._get_pool_manager()
-        self.cache = S3Cache()
         self.pen = Pen()
         self.logo = Image.open("assets/parkrun/logo.png")
         self.position_to_colour = {
@@ -74,7 +49,9 @@ class Parkrun:
 
         url = os.environ.get("PROXY_URL")
         if url is None:
-            raise ValueError("The PROXY_URL environment variable must be set when using the Parkrun class in an AWS Lambda")
+            raise ValueError(
+                "The PROXY_URL environment variable must be set when using the Parkrun class in an AWS Lambda"
+            )
 
         scheme, proxy_info = url.split("://", 1)
         proxy_basic_auth, host = proxy_info.split("@", 1)
@@ -86,13 +63,12 @@ class Parkrun:
             proxy_headers=proxy_headers,
         )
 
-
     @staticmethod
     def _clean_cell(cell):
-        while '<' in cell:
-            start = cell.find('<')
-            end = cell.find('>', start)
-            cell = cell[:start] + cell[end + 1:]
+        while "<" in cell:
+            start = cell.find("<")
+            end = cell.find(">", start)
+            cell = cell[:start] + cell[end + 1 :]
         cell = cell.strip()
         return cell
 
@@ -104,21 +80,25 @@ class Parkrun:
 
     def _get_html(self, id_):
         url = f"https://www.parkrun.org.uk/parkrunner/{id_}"
-        response = self.pool_manager.request(method="GET", url=url, headers=self.headers)
+        response = self.pool_manager.request(
+            method="GET", url=url, headers=self.headers
+        )
         if response.status != 200:
             print(f"Parkrun API error: {response.status}")
             return None
 
-        html = response.data.decode('utf-8')
+        html = response.data.decode("utf-8")
         return html
 
     def _parse_html(self, html):
-        start_tbody = html.find('<tbody>')
-        start_tr = html.find('<tr', start_tbody)
-        end_tr = html.find('</tr>', start_tr)
+        start_tbody = html.find("<tbody>")
+        start_tr = html.find("<tr", start_tbody)
+        end_tr = html.find("</tr>", start_tr)
         first_row_html = html[start_tr:end_tr]
-        cells = first_row_html.split('<td>')[1:]
-        event, date, gender_position, position, time, age_grade = [self._clean_cell(cell) for cell in cells]
+        cells = first_row_html.split("<td>")[1:]
+        event, date, gender_position, position, time, age_grade = [
+            self._clean_cell(cell) for cell in cells
+        ]
         minutes, seconds = time.split(":")
         time_in_seconds = 60 * int(minutes) + int(seconds)
         stats = {
@@ -132,7 +112,8 @@ class Parkrun:
         return stats
 
     def _get_stats(self, ids):
-        stats, last_updated = self.cache.get()
+        key = "results.json"
+        stats, last_updated = self.cache.get(key)
         if last_updated is not None:
             recently_checked = (self.now_timestamp - last_updated) < 1800
             not_saturday = self.now_weekday != 5
@@ -157,7 +138,7 @@ class Parkrun:
             update = True
 
         if update:
-            self.cache.save(stats)
+            self.cache.save(stats, key)
 
         return stats
 
@@ -171,9 +152,7 @@ class Parkrun:
             if runner_stats["date"] != self.now_date:
                 continue
 
-            runners.append(
-                Runner(name=name, id_=id_, **runner_stats)
-            )
+            runners.append(Runner(name=name, id_=id_, **runner_stats))
 
         runners.sort(key=lambda runner: runner.time)
         return runners
@@ -188,7 +167,7 @@ class Parkrun:
             color=Colours.WHITE,
         )
 
-        time = datetime.now().strftime("%H:%M")
+        time = self.now.strftime("%H:%M")
         time_width = self.pen.text_width(time)
         self.pen.draw_text(
             image=image,
@@ -214,7 +193,7 @@ class Parkrun:
             seconds = runner.time % 60
             text = f"{minutes:02}:{seconds:02}"
             text_width = self.pen.text_width(text)
-            self.pen.draw_text(image, (63 - text_width, y), text, colour)
+            self.pen.draw_text(image, (63 - text_width, y + 1), text, colour)
             y += self.pen.letter_height + 2
 
             if y + self.pen.letter_height >= 64:
@@ -224,9 +203,13 @@ class Parkrun:
 
 
 def main():
-    parkrun = Parkrun()
+    from my_config import parkrun_message
+
+    cache = S3Cache()
+    parkrun = Parkrun(cache)
     image = parkrun.make_image(parkrun_message.id_to_name)
     image.save("../parkrun.png")
+
 
 if __name__ == "__main__":
     main()

@@ -15,11 +15,22 @@ class Colours:
     SILVER = (192, 192, 192)
     BRONZE = (205, 127, 50)
 
+
 class Pen:
     def __init__(self):
-        self.glyphs = {letter: Image.open(f"assets/letters/{letter}.png") for letter in string.ascii_uppercase}
-        self.glyphs.update({str(number): Image.open(f"assets/numbers/{number}.png") for number in range(10)})
+        self.glyphs = {
+            letter: Image.open(f"assets/letters/{letter}.png")
+            for letter in string.ascii_uppercase
+        }
+        self.glyphs.update(
+            {
+                str(number): Image.open(f"assets/numbers/{number}.png")
+                for number in range(10)
+            }
+        )
         self.glyphs[":"] = Image.open("assets/letters/colon.png")
+        self.glyphs["°"] = Image.open("assets/letters/degrees.png")
+        self.glyphs["%"] = Image.open("assets/letters/percent.png")
         self.letter_height = self.glyphs["A"].height
         self.number_height = self.glyphs["0"].height
 
@@ -32,7 +43,9 @@ class Pen:
                 text_width += self.glyphs[char].width
         return text_width
 
-    def draw_text(self, image: Image, xy: tuple[int, int], text: str, color: tuple[int, int, int]):
+    def draw_text(
+        self, image: Image, xy: tuple[int, int], text: str, color: tuple[int, int, int]
+    ):
         x, y = xy
         for char in text.upper():
             if char == " ":

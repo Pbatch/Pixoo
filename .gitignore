@@ -4,4 +4,5 @@ aws/cdk.out
 **/__pycache__
 parkrun.png
 tfl.png
+met_office.png
 local/my_config.py

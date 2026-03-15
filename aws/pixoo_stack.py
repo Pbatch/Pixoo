@@ -57,7 +57,7 @@ class PixooStack(Stack):
         }
 
         # Optional keys
-        for key in ["TFL_APP_KEY", "PROXY_URL"]:
+        for key in ["TFL_APP_KEY", "PROXY_URL", "MET_OFFICE_API_KEY"]:
             if key in os.environ:
                 environment[key] = os.environ[key]
 
