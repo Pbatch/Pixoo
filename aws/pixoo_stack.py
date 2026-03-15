@@ -49,17 +49,24 @@ class PixooStack(Stack):
         )
         pixoo_queue.grant_send_messages(producer_lambda)
 
+        environment = {
+            "PIXOO_URL": os.environ["PIXOO_URL"],
+            "BUCKET_NAME": pixoo_bucket.bucket_name,
+            "TZ": "Europe/London",
+            "LAMBDA_ENV": "true",
+        }
+
+        # Optional keys
+        for key in ["TFL_APP_KEY", "PROXY_URL"]:
+            if key in os.environ:
+                environment[key] = os.environ[key]
+
         # Lambda that is triggered by SQS
         consumer_lambda = PythonFunction(
             self,
             "Consumer",
             index="consumer.py",
-            environment={
-                "PIXOO_URL": os.environ["PIXOO_URL"],
-                "TFL_APP_KEY": os.environ["TFL_APP_KEY"],
-                "BUCKET_NAME": pixoo_bucket.bucket_name,
-                "TZ": "Europe/London",
-            },
+            environment=environment,
             **lambda_props,
         )
         pixoo_bucket.grant_read_write(consumer_lambda)

@@ -6,6 +6,7 @@ from datetime import datetime
 import boto3
 import urllib3
 from PIL import Image
+from urllib3 import make_headers
 
 from my_config import parkrun_message
 from pen import Colours, Pen
@@ -52,10 +53,9 @@ class Parkrun:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
             'Accept-Language': 'en-US,en;q=0.9',
         }
-        self.pool_manager = urllib3.PoolManager()
+        self.pool_manager = self._get_pool_manager()
         self.cache = S3Cache()
         self.pen = Pen()
-
         self.logo = Image.open("assets/parkrun/logo.png")
         self.position_to_colour = {
             0: Colours.GOLD,
@@ -66,6 +66,26 @@ class Parkrun:
         self.now_date = None
         self.now_timestamp = None
         self.now_weekday = None
+
+    @staticmethod
+    def _get_pool_manager():
+        if os.environ.get("LAMBDA_ENV") is None:
+            return urllib3.PoolManager()
+
+        url = os.environ.get("PROXY_URL")
+        if url is None:
+            raise ValueError("The PROXY_URL environment variable must be set when using the Parkrun class in an AWS Lambda")
+
+        scheme, proxy_info = url.split("://", 1)
+        proxy_basic_auth, host = proxy_info.split("@", 1)
+        proxy_url = f"{scheme}://{host}"
+        proxy_headers = make_headers(proxy_basic_auth=proxy_basic_auth)
+
+        return urllib3.ProxyManager(
+            proxy_url=proxy_url,
+            proxy_headers=proxy_headers,
+        )
+
 
     @staticmethod
     def _clean_cell(cell):

@@ -56,7 +56,9 @@ DIRECTION_EXCEPTIONS = {
 class TFL:
     def __init__(self):
         self.pool_manager = urllib3.PoolManager()
-        self.app_key = os.environ["TFL_APP_KEY"]
+        self.app_key = os.environ.get("TFL_APP_KEY")
+        if self.app_key is None:
+            raise ValueError("The TFL_APP_KEY environment variable must be set to use the TFL class")
         self.pen = Pen()
 
         self.underground = Image.open("assets/tfl/underground.png")
