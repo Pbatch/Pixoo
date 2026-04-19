@@ -72,7 +72,7 @@ class Weather:
         return weather
 
     def _get_pond_temperature(self):
-        key = "pond_temperature"
+        key = "pond_temperature.json"
         temperature, last_updated = self.cache.get(key)
         if last_updated is not None:
             recently_checked = (self.now_timestamp - last_updated) < 43200
