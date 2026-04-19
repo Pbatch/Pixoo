@@ -1,7 +1,7 @@
 import json
 import time
 
-from met_office import MetOffice
+from weather import Weather
 from parkrun import Parkrun
 from pixoo import Pixoo
 from s3_cache import S3Cache
@@ -11,7 +11,7 @@ pixoo = Pixoo()
 cache = S3Cache()
 tfl = TFL()
 parkrun = Parkrun(cache)
-met_office = MetOffice(cache)
+weather = Weather(cache)
 
 
 def lambda_handler(event, context):
@@ -31,10 +31,10 @@ def lambda_handler(event, context):
     elif mode == "parkrun":
         id_to_name = body["id_to_name"]
         image = parkrun.make_image(id_to_name)
-    elif mode == "met_office":
+    elif mode == "weather":
         lat = body["lat"]
         lon = body["lon"]
-        image = met_office.make_image(lat, lon)
+        image = weather.make_image(lat, lon)
     else:
         raise ValueError(f'Mode "{mode}" is not supported')
 

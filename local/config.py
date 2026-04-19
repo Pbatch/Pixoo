@@ -38,8 +38,8 @@ class ParkrunMessage(Message):
 
 
 @dataclass(frozen=True, kw_only=True)
-class MetOfficeMessage(Message):
-    mode: str = "met_office"
+class WeatherMessage(Message):
+    mode: str = "weather"
     lat: str
     lon: str
 
