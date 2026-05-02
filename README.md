@@ -3,13 +3,13 @@
 <table style="width: 100%;">
   <tr>
     <td>
-      <img src="images/tfl.png" alt="TFL dashboard" height="96">
+      <img src="images/tfl.png" alt="TFL dashboard" height="192">
     </td>
     <td>
-      <img src="images/parkrun.png" alt="Parkrun dashboard" height="96">
+      <img src="images/parkrun.png" alt="Parkrun dashboard" height="192">
     </td>
     <td>
-      <img src="images/weather.png" alt="Weather dashboard" height="96">
+      <img src="images/weather.png" alt="Weather dashboard" height="192">
     </td>
   </tr>
 </table>
