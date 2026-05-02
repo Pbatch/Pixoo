@@ -1,9 +1,9 @@
 # Pixoo64
 
-<p align="center">
-  <img src="images/tfl.png" alt="TFL dashboard" width="32%" />
-  <img src="images/parkrun.png" alt="Parkrun dashboard" width="32%" />
-  <img src="images/weather.png" alt="Weather dashboard" width="32%" />
+<p>
+  <img src="images/tfl.png" alt="TFL dashboard" width="30%" style="border: 1px solid white;" />
+  <img src="images/parkrun.png" alt="Parkrun dashboard" width="30%" style="border: 1px solid white;" />
+  <img src="images/weather.png" alt="Weather dashboard" width="30%" style="border: 1px solid white;" />
 </p>
 
 # Setup
