@@ -1,5 +1,7 @@
 # Pixoo64
 
+Live data dashboards for the Pixoo64
+
 <p align="center">
   <img src="images/weather.png" alt="Weather dashboard" width="128" height="128" />
   &nbsp;&nbsp;&nbsp;&nbsp;
