@@ -2,7 +2,6 @@
 .idea/
 aws/cdk.out
 **/__pycache__
-parkrun.png
-images/tfl.png
-weather.png
+*.png
+!images/*.png
 local/my_config.py
