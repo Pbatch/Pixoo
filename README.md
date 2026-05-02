@@ -1,10 +1,18 @@
 # Pixoo64
 
-<p>
-  <img src="images/tfl.png" alt="TFL dashboard" width="30%" style="border: 1px solid white;" />
-  <img src="images/parkrun.png" alt="Parkrun dashboard" width="30%" style="border: 1px solid white;" />
-  <img src="images/weather.png" alt="Weather dashboard" width="30%" style="border: 1px solid white;" />
-</p>
+<table border="0">
+  <tr>
+    <td width="33.3%">
+      <img src="images/weather.png" style="width:100%; border: 1px solid white; box-sizing: border-box;">
+    </td>
+    <td width="33.3%">
+      <img src="images/tfl.png" style="width:100%; border: 1px solid white; box-sizing: border-box;">
+    </td>
+    <td width="33.3%">
+      <img src="images/parkrun.png" style="width:100%; border: 1px solid white; box-sizing: border-box;">
+    </td>
+  </tr>
+</table>
 
 # Setup
 
