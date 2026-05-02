@@ -2,18 +2,17 @@
 
 <table border="0" width="100%">
   <tr>
-    <td width="33.3%">
-      <img src="images/weather.png" style="width:100%; border: 1px solid white; box-sizing: border-box;">
+    <td width="33.3%" align="center">
+      <img src="images/weather.png" style="width: 100%; border: 1px solid white; display: block; image-rendering: pixelated;">
     </td>
-    <td width="33.3%">
-      <img src="images/tfl.png" style="width:100%; border: 1px solid white; box-sizing: border-box;">
+    <td width="33.3%" align="center">
+      <img src="images/tfl.png" style="width: 100%; border: 1px solid white; display: block; image-rendering: pixelated;">
     </td>
-    <td width="33.3%">
-      <img src="images/parkrun.png" style="width:100%; border: 1px solid white; box-sizing: border-box;">
+    <td width="33.3%" align="center">
+      <img src="images/parkrun.png" style="width: 100%; border: 1px solid white; display: block; image-rendering: pixelated;">
     </td>
   </tr>
 </table>
-
 # Setup
 
 ### Shopping
