@@ -1,6 +1,6 @@
 # Pixoo64
 
-<table border="0">
+<table border="0" width="100%">
   <tr>
     <td width="33.3%">
       <img src="images/weather.png" style="width:100%; border: 1px solid white; box-sizing: border-box;">
