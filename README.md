@@ -1,18 +1,10 @@
 # Pixoo64
 
-<table style="width: 100%;">
-  <tr>
-    <td>
-      <img src="images/tfl.png" alt="TFL dashboard" height="192">
-    </td>
-    <td>
-      <img src="images/parkrun.png" alt="Parkrun dashboard" height="192">
-    </td>
-    <td>
-      <img src="images/weather.png" alt="Weather dashboard" height="192">
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <img src="images/tfl.png" alt="TFL dashboard" width="32%" />
+  <img src="images/parkrun.png" alt="Parkrun dashboard" width="32%" />
+  <img src="images/weather.png" alt="Weather dashboard" width="32%" />
+</p>
 
 # Setup
 
@@ -90,7 +82,7 @@ belsize_message = TflMessage(
 4) Test that the key is working by running `cd local && python tfl.py`. 
 This will make a sample image called `tfl.png`.
 
-<img src="images/tfl.png" alt="TFL dashboard" height="128"/>
+<img src="images/tfl.png" alt="TFL dashboard" width="50%"/>
 
 If you want more stations,
 or particular icons,
@@ -117,7 +109,7 @@ parkrun_message = ParkrunMessage(
 2) Test that your config is working by running `cd local && python parkrun.py`.
 This will make a sample image called `parkrun.png`.
 
-<img src="images/parkrun.png" alt="Parkrun dashboard" height="128">
+<img src="images/parkrun.png" alt="Parkrun dashboard" width="50%">
 
 When running in the cloud,
 the Parkrun website will block the IP range of the AWS Lambdas,
@@ -151,7 +143,7 @@ weather_message = WeatherMessage(
 3) Test that the key is working by running `cd local && python weather.py`. 
 This will make a sample image called `weather.png`.
 
-<img src="images/weather.png" alt="Weather dashboard" height="128">
+<img src="images/weather.png" alt="Weather dashboard" width="50%">
 
 ### Messages
 
